@@ -3,14 +3,14 @@ const JwtService = require('../Services/JwtService')
 
 const createUser = async(req,res) => {
     try{
-        const { name, email, phone, password } = req.body
+        const { phone, password } = req.body
         if (phone.toString().length !== 10 || isNaN(phone)) {
             return res.status(400).json({
                 message: "Bạn cần nhập số điện thoại hợp lệ"
             });
         }
-        const data =  await UserService.createUser(req.body)
-        return res.status(200).json({data: data})
+        const response =  await UserService.createUser(req.body)
+        return res.status(200).json(response)
     }catch(err){
         res.status(400).json({message: err})
     }
@@ -19,13 +19,24 @@ const createUser = async(req,res) => {
 const loginUser = async(req, res) => {
     try{
         const { phone, password } = req.body
+        if(!phone || !password){
+            return res.status(200).json({
+                message: "Bạn cần nhập số điện thoại và mật khẩu"
+            })
+        }
         if (phone.toString().length !== 10 || isNaN(phone)) {
-            return res.status(400).json({
+            return res.status(200).json({
                 message: "Bạn cần nhập số điện thoại hợp lệ"
             });
         }
-        const data =  await UserService.loginUser(req.body)
-        return res.status(200).json({data: data})
+        const response =  await UserService.loginUser(req.body)
+        const {refresh_token, ...newResponse} = response 
+
+        res.cookie('refresh_token', refresh_token, {
+            HttpOnly: true,
+            Secure: true,
+        })
+        return res.status(200).json(newResponse)
     }catch(err){
         res.status(400).json({message: err})
     }
@@ -38,8 +49,8 @@ const updateUser = async (req, res) => {
             res.status(200).json({message: "Yêu cầu userID"})
         }
         const data = req.body
-        const dataUser = await UserService.updateUser(userId, data)
-        return res.status(200).json({data: dataUser})
+        const response = await UserService.updateUser(userId, data)
+        return res.status(200).json(response)
     }catch(err){
         res.status(400).json({message: err})
     }
@@ -51,8 +62,8 @@ const deleteUser = async (req,res) => {
         if(!userId){
             res.status(200).json({message: "Yêu cầu userID"})
         }
-        const dataUser = await UserService.deleteUser(userId)
-        return res.status(200).json({data: dataUser})
+        const response = await UserService.deleteUser(userId)
+        return res.status(200).json(response)
     }catch(err){
         res.status(400).json({message: err})
     }
@@ -64,8 +75,8 @@ const getUser = async (req,res) => {
         if(!userId){
             res.status(200).json({message: "Yêu cầu userID"})
         }
-        const dataUser = await UserService.getUser(userId)
-        return res.status(200).json({data: dataUser})
+        const response = await UserService.getUser(userId)
+        return res.status(200).json(response)
     }catch(err){
         res.status(400).json({message: err})
     }
@@ -73,21 +84,22 @@ const getUser = async (req,res) => {
 
 const getAllUser = async (req,res) => {
     try{
-        const dataUser = await UserService.getAllUser()
-        return res.status(200).json({data: dataUser})
+        const response = await UserService.getAllUser()
+        return res.status(200).json(response)
     }catch(err){
         res.status(400).json({message: err})
     }
 }
 
 const refreshToken = async (req,res) => {
+    console.log('req.cookies', req.cookies)
     try{
-        const token = req.headers.token
+        const token = req.cookies.refresh_token
         if(!token){
             return res.status(200).json({message: "Token không hợp lệ"})
         }
         const response = await JwtService.refreshAccessToken(token)
-        return res.status(200).json({data: response})
+        return res.status(200).json(response)
     }catch(err){
         res.status(400).json({message: err})
     }

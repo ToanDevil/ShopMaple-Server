@@ -4,11 +4,11 @@ dotenv.config();
 
 const authMiddleware = (req, res, next) => {
     try {
-        const token = req.headers.token;
+        const token = req.headers.access_token;
 
         if (!token) {
             return res.status(401).json({
-                status: "ERROR",
+                status: 'ERR',
                 message: "Không tìm thấy token"
             });
         }
@@ -16,7 +16,7 @@ const authMiddleware = (req, res, next) => {
         jwt.verify(token, process.env.ACCESS_TOKEN, function(err, user) {
             if (err) {
                 return res.status(403).json({
-                    status: "ERROR",
+                    status: 'ERR',
                     message: "Token không hợp lệ"
                 });
             }
@@ -27,7 +27,7 @@ const authMiddleware = (req, res, next) => {
                 next();
             } else {
                 return res.status(400).json({
-                    status: "ERROR",
+                    status: 'ERR',
                     message: "Bạn không đủ quyền!"
                 });
             }
@@ -39,12 +39,12 @@ const authMiddleware = (req, res, next) => {
 
 const authCusMiddleware = (req, res, next) => {
     try {
-        const token = req.headers.token;
+        const token = req.headers.access_token;
         const userID = req.params.id;
 
         if (!token) {
             return res.status(401).json({
-                status: "ERROR",
+                status: 'ERR',
                 message: "Không tìm thấy token"
             });
         }
@@ -52,19 +52,17 @@ const authCusMiddleware = (req, res, next) => {
         jwt.verify(token, process.env.ACCESS_TOKEN, function(err, user) {
             if (err) {
                 return res.status(403).json({
-                    status: "ERROR",
+                    status: 'ERR',
                     message: "Token không hợp lệ",
                     err: err
                 });
             }
 
-            const { payload } = user;
-
-            if (!payload.isAdmin && payload.id === userID) {
+            if (!user.isAdmin && user.id === userID) {
                 next();
             } else {
                 return res.status(400).json({
-                    status: "ERROR",
+                    status: 'ERR',
                     message: "Bạn không đủ quyền!"
                 });
             }

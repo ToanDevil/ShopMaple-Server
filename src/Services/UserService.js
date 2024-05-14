@@ -27,10 +27,16 @@ const createUser = (newUser) => {
                     })
                 }else {
                     // Nếu không tạo được người dùng, reject với thông báo lỗi
-                    reject("Lỗi Server");
+                    resolve({
+                        status: 'ERR',
+                        message: "Lỗi Server"
+                    });
                 }
             }else{
-                reject("Số điện thoại đã có tài khoản");
+                resolve({
+                    status: 'ERR',
+                    message: "Số điện thoại đã có tài khoản"
+                });
             }
         }catch(err){
             reject(err)
@@ -47,14 +53,14 @@ const loginUser = (userLogin) => {
             })
             if(!userData){
                 resolve({
-                    status:"OK",
+                    status:"ERR",
                     message: "Tên đăng nhập sai"
                 })
             }
             const comparePassword = bcrypt.compareSync(password, userData.password)
             if(!comparePassword){
                 resolve({
-                    status: "OK",
+                    status: "ERR",
                     message: "Kiểm tra lại mật khẩu"
                 })
             }
