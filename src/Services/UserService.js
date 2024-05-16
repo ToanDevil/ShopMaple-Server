@@ -54,7 +54,7 @@ const loginUser = (userLogin) => {
             if(!userData){
                 resolve({
                     status:"ERR",
-                    message: "Tên đăng nhập sai"
+                    message: "Kiểm tra lại tên đăng nhập hoặc mật khẩu"
                 })
             }
             const comparePassword = bcrypt.compareSync(password, userData.password)

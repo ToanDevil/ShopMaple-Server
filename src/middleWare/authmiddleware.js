@@ -4,7 +4,7 @@ dotenv.config();
 
 const authMiddleware = (req, res, next) => {
     try {
-        const token = req.headers.access_token;
+        const token = req.headers.access_token.split(' ')[1];
 
         if (!token) {
             return res.status(401).json({
@@ -39,7 +39,7 @@ const authMiddleware = (req, res, next) => {
 
 const authCusMiddleware = (req, res, next) => {
     try {
-        const token = req.headers.access_token;
+        const token = req.headers.access_token.split(' ')[1];
         const userID = req.params.id;
 
         if (!token) {
@@ -51,7 +51,7 @@ const authCusMiddleware = (req, res, next) => {
 
         jwt.verify(token, process.env.ACCESS_TOKEN, function(err, user) {
             if (err) {
-                return res.status(403).json({
+                return res.status(200).json({
                     status: 'ERR',
                     message: "Token không hợp lệ",
                     err: err

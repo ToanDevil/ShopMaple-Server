@@ -33,8 +33,8 @@ const loginUser = async(req, res) => {
         const {refresh_token, ...newResponse} = response 
 
         res.cookie('refresh_token', refresh_token, {
-            HttpOnly: true,
-            Secure: true,
+            httpOnly: true,
+            secure: false,
         })
         return res.status(200).json(newResponse)
     }catch(err){
@@ -92,7 +92,6 @@ const getAllUser = async (req,res) => {
 }
 
 const refreshToken = async (req,res) => {
-    console.log('req.cookies', req.cookies)
     try{
         const token = req.cookies.refresh_token
         if(!token){
