@@ -5,6 +5,7 @@ const createProduct = async(req,res) => {
     try{
 
         const { name,image, type, price, quantity, description} = req.body
+        console.log(name, image, type, price, quantity, description)
         const data =  await ProductService.createProduct(req.body)
         return res.status(200).json({data: data})
     }catch(err){
@@ -49,8 +50,8 @@ const getProductByID = async (req, res) => {
 const getAllProduct = async (req,res) => {
     try{
         const {limit, page, minPrice, maxPrice, type, search} = req.query
-        const dataProduct = await ProductService.getAllProduct(limit || 8,page || 0, minPrice||0,maxPrice||10e9, type,search)
-        return res.status(200).json({data: dataProduct})
+        const dataProduct = await ProductService.getAllProduct(limit || 10e9,page || 0, minPrice||0,maxPrice||10e9, type,search)
+        return res.status(200).json(dataProduct)
     }catch(err){
         res.status(400).json({message: err})
     }

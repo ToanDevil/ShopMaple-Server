@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const routes = require("./src/routers");
-const bodyParse = require('body-parser');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
@@ -12,8 +12,11 @@ const app = express()
 const port = process.env.PORT || 3001
 
 app.use(cors())
-app.use(bodyParse.json())
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json())
 app.use(cookieParser())
+
 
 routes(app)
 

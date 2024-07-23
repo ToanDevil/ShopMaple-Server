@@ -58,7 +58,7 @@ const authCusMiddleware = (req, res, next) => {
                 });
             }
 
-            if (!user.isAdmin && user.id === userID) {
+            if (user.id === userID) {
                 next();
             } else {
                 return res.status(400).json({

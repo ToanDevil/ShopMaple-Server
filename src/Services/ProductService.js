@@ -7,7 +7,7 @@ const createProduct = (newProduct) => {
         try{
             if(!name || !image || !type || !price || !quantity || !description){
                 resolve({
-                    status: "OK",
+                    status: "ERR",
                     message: "Vui lòng điền đầy đủ thông tin (name, image, type, price, description)"
                 })
             }
@@ -16,7 +16,7 @@ const createProduct = (newProduct) => {
             })  
             if(checkProduct){
                 resolve({
-                    status: "OK",
+                    status: "ERR",
                     message: "Sản phẩm đã tồn tại"
                 })
             }else{
@@ -36,7 +36,7 @@ const createProduct = (newProduct) => {
                         data: createProduct
                     })
                 }else {
-                    // Nếu không tạo được người dùng, reject với thông báo lỗi
+                    // Nếu không tạo được sản phẩm, reject với thông báo lỗi
                     reject("Lỗi Server");
                 }    
             } 
@@ -55,7 +55,7 @@ const updateProduct = (data, productID) => {
             })  
             if(!checkProduct){
                 resolve({
-                    status: "OK",
+                    status: "ERR",
                     message: "Sản phẩm không tồn tại"
                 })
             }else{
