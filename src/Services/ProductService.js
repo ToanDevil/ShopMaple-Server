@@ -108,6 +108,20 @@ const deleteProduct = (productID) => {
     })
 }
 
+const deleteManyProduct = (productIDs) => {
+    return new Promise(async (resolve, reject)=>{
+        try{
+            await Product.deleteMany({ _id: { $in: productIDs } })
+            resolve({
+                status: "OK",
+                message: "Xóa thành công"
+            })
+        }catch(err){
+            reject(err)
+        }
+    })
+}
+
 const getProductByID = (productID) => {
     return new Promise(async (resolve, reject)=>{
         try{
@@ -123,7 +137,6 @@ const getProductByID = (productID) => {
                 const getProduct = await Product.findById(productID)
                 resolve({
                     status: "OK",
-                    message: "Xóa thành công",
                     data: getProduct
                 })
             } 
@@ -168,5 +181,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     getProductByID,
-    getAllProduct
+    getAllProduct,
+    deleteManyProduct
 }

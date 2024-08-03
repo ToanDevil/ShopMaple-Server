@@ -5,7 +5,6 @@ const createProduct = async(req,res) => {
     try{
 
         const { name,image, type, price, quantity, description} = req.body
-        console.log(name, image, type, price, quantity, description)
         const data =  await ProductService.createProduct(req.body)
         return res.status(200).json({data: data})
     }catch(err){
@@ -28,6 +27,17 @@ const deleteProduct = async(req,res) => {
     try{
         const productID = req.params.id
         const data =  await ProductService.deleteProduct(productID)
+        return res.status(200).json({data: data})
+    }catch(err){
+        res.status(400).json({message: err})
+    }
+}
+
+const deleteManyProduct = async(req,res) => {
+    try{
+        const { ids } = req.body;
+        console.log('Received IDs:', ids);
+        const data =  await ProductService.deleteManyProduct(ids)
         return res.status(200).json({data: data})
     }catch(err){
         res.status(400).json({message: err})
@@ -62,5 +72,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     getProductByID,
-    getAllProduct
+    getAllProduct,
+    deleteManyProduct
 }
