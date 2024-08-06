@@ -140,7 +140,7 @@ const getUser = (id) => {
                 data: userData
             })
         }catch(err){
-            reject(err)
+            reject(err.message)
         }
     })
 }

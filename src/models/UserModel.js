@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
         avatar: { type: String, require: true},
         sex: { type: Number, require: true},
         dob: { type: Date, require: true},
+        address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
         access_token: {type: String, require: true},
         refresh_token: {type: String, require: true}
     },
