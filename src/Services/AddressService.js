@@ -41,11 +41,33 @@ const createAddress = (address) => {
     });
 };
 
-const getAddressByUserId = (userId) => {
+const updateAddress = (id, data) => {
+    return new Promise(async (resolve, reject) => { 
+        try {
+            const checkMainAddress = await Address.countDocuments({addressMain:true})
+            if(checkMainAddress>0){
+                await Address.updateMany({ addressMain: true }, { addressMain: false });
+            }
+            const updatedAddress = await Address.findByIdAndUpdate(id, data, {new:true})
+            resolve({
+                status: "OK",
+                message: "Cập nhật thành công",
+                data: updatedAddress
+            })
+        } catch (err) {
+            reject({
+                status: 'ERR',
+                message: err.message
+            });
+        }
+    });
+};
+
+const getAddressById = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const data = await Address.find({userId})
-            if(data){
+            if(data.length > 0){
                 resolve({
                     status: "OK",
                     message: "success",
@@ -53,9 +75,11 @@ const getAddressByUserId = (userId) => {
                 });
             }
             else{
+                const data = await Address.find({_id: userId})
                 resolve({
-                    status: 'ERR',
-                    message: "Lỗi Server"
+                    status: "OK",
+                    message: "success",
+                    data: data
                 });
             }
         } catch (error) {
@@ -89,6 +113,7 @@ const deleteAddressById = (addressId) => {
 
 module.exports = {
     createAddress,
-    getAddressByUserId,
-    deleteAddressById
+    getAddressById,
+    deleteAddressById,
+    updateAddress
 };

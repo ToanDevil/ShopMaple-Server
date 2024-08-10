@@ -67,11 +67,25 @@ const getAllProduct = async (req,res) => {
     }
 }
 
+const getProductByCategoryId = async (req, res) => {
+    try{
+        const categoryId = req.params.categoryId
+        if(!categoryId){
+            return res.status(400).json({message: "Yêu cầu categoryId"})
+        }
+        const data = await ProductService.getProductByCategoryId(categoryId)
+        return res.status(200).json({data:data})
+    }catch(err){
+        res.status(400).json({message: err})
+    }
+}
+
 module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
     getProductByID,
     getAllProduct,
-    deleteManyProduct
+    deleteManyProduct,
+    getProductByCategoryId
 }

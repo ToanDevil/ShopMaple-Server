@@ -1,4 +1,5 @@
 const Product = require("../models/ProductModel")
+const CategoryProduct = require('../models/CategoryProduct')
 
 
 const createProduct = (newProduct) => {
@@ -135,9 +136,10 @@ const getProductByID = (productID) => {
                 })
             }else{
                 const getProduct = await Product.findById(productID)
+                const typeProduct = await CategoryProduct.findById(getProduct.type).lean();
                 resolve({
                     status: "OK",
-                    data: getProduct
+                    data: {...getProduct, type: typeProduct ? typeProduct.name : null}
                 })
             } 
         }catch(err){
@@ -176,11 +178,29 @@ const getAllProduct = (limit, page, minPrice, maxPrice, type, search) => {
     })
 }
 
+const getProductByCategoryId = (categoryId) => {
+    return new Promise(async (resolve, reject)=>{
+        try{
+            const getProduct = await Product.find({
+                type: categoryId 
+            })  
+            resolve({
+                status: "OK",
+                data: getProduct
+            })
+        }catch(err){
+            reject(err)
+        }
+    })
+}
+
+
 module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
     getProductByID,
     getAllProduct,
-    deleteManyProduct
+    deleteManyProduct,
+    getProductByCategoryId
 }

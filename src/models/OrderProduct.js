@@ -16,11 +16,12 @@ const orderSchema = new mongoose.Schema(
             }
         ],
         shippingAddress: {
-            fullName: {type: String, require: true},
-            address: {type: String, require: true},
+            homeNumber: {type: String, require: true},
             city: {type: String, require: true},
             country: {type: String, require: true},
-            phone: {type: Number, require: true},
+            phone: {type: String, require: true},
+            name: {type: String, require: true},
+            address: {type: mongoose.Schema.Types.ObjectId, ref: 'Address', require: true},
         },
         paymentMethod: {type: String, require: true},
         orderPrice: {type: Number, require: true},
@@ -28,6 +29,7 @@ const orderSchema = new mongoose.Schema(
         taxPrice: {type: Number, require: true},
         totalPrice: {type: Number, require: true},
         user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', require: true},
+        status: {type: String, require: true},
         isPaid: {type: Boolean, default: false},
         paidAt: {type: Date},
         isDelivered: {type: Boolean, default: false},

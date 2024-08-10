@@ -23,13 +23,35 @@ const createAddress = async (req, res) => {
     }
 };
 
-const getAddressByUserId = async (req, res) => {
+const updateAddressById = async (req, res) => {
+    try {
+        const { homeNumber, commune, district, city, userId, phone, name, addressMain } = req.body; 
+        const id = req.params.id
+        if(commune && district && city){
+            const cityExists = citis.some(c => c.city === city.trim());
+            if (!cityExists) return res.status(400).json({ message: "Thành phố không tồn tại" });
+    
+            const districtExists = districts.some(d => d.city === city.trim() && d.district === district.trim());
+            if (!districtExists) return res.status(400).json({ message: "Quận/Huyện không tồn tại" });
+    
+            const communeExists = communes.some(c => c.city === city.trim() && c.district === district.trim() && c.commune === commune.trim());
+            if (!communeExists) return res.status(400).json({ message: "Xã/Phường không tồn tại" });
+        }
+
+        const response = await AddressService.updateAddress(id,req.body);
+        return res.status(200).json(response);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
+const getAddressById = async (req, res) => {
     try{
         const userId = req.params.id
         if(!userId){
             res.status(304).json({message: "Yêu cầu UserId"})
         }
-        const response = await AddressService.getAddressByUserId(userId)
+        const response = await AddressService.getAddressById(userId)
         return res.status(200).json(response)
     }
     catch(err){
@@ -52,6 +74,7 @@ const deleteAddressById = async (req, res) => {
 
 module.exports = {
     createAddress,
-    getAddressByUserId,
-    deleteAddressById
+    getAddressById,
+    deleteAddressById,
+    updateAddressById
 };
