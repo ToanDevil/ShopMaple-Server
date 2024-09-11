@@ -6,10 +6,11 @@ const createAddress = (address) => {
         const { homeNumber, commune, district, city, userId, phone, name, addressMain } = address; 
         try {
             const checkMainAddress = await Address.countDocuments({addressMain:true})
-            if(checkMainAddress>1){
-                await Address.updateMany({ addressMain: true }, { addressMain: false });
+            console.log(checkMainAddress)
+            if(checkMainAddress === 1 && addressMain){
+                await Address.updateMany({ addressMain: true }, { addressMain: false }, {new: true});
             }
-            const createdAddress = await Address.create({
+            let createdAddress = await Address.create({
                 homeNumber: homeNumber,
                 commune: commune,
                 district: district,
@@ -17,7 +18,7 @@ const createAddress = (address) => {
                 userId: userId,
                 phone: phone,
                 name: name,
-                addressMain: addressMain 
+                addressMain: checkMainAddress === 0 ? true : addressMain 
             });
             console.log(createdAddress);
             if (createdAddress) {
@@ -45,8 +46,15 @@ const updateAddress = (id, data) => {
     return new Promise(async (resolve, reject) => { 
         try {
             const checkMainAddress = await Address.countDocuments({addressMain:true})
-            if(checkMainAddress>0){
-                await Address.updateMany({ addressMain: true }, { addressMain: false });
+            if(checkMainAddress === 1 && data.addressMain){
+                await Address.updateMany({ addressMain: true }, { addressMain: false }, {new: true});
+            }
+            const checkAddress = await Address.findById(id)
+            if(checkAddress.addressMain && !data.addressMain){
+                resolve({
+                    status: "ERR",
+                    message: "Bạn không thể sửa địa chỉ mặc định thành không phải địa chỉ mặc định!"
+                })
             }
             const updatedAddress = await Address.findByIdAndUpdate(id, data, {new:true})
             resolve({
@@ -99,6 +107,14 @@ const deleteAddressById = (addressId) => {
                     status: "OK",
                     message: "addressID không hợp lệ"
                 });
+            }
+            const checkMainAddress = await Address.countDocuments()
+            const checkAddress = await Address.find({addressMain: true})
+            if(checkMainAddress > 1 && checkAddress === addressId){
+                resolve({
+                    status: "ERR",
+                    message: "Xóa hết địa chỉ phụ mới được xóa địa chỉ chính"
+                })
             }
             await Address.findByIdAndDelete(addressId)
             resolve({
