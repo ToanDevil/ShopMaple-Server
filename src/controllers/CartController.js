@@ -34,8 +34,8 @@ const deleteItemInCart = async (req, res) => {
 
 const deleteManyItemInCart = async (req, res) => {
     try{
-        const { productIds } = req.body;
-        const data =  await CartService.deleteManyItemInCart(productIds)
+        const { productIds, userId } = req.body;
+        const data =  await CartService.deleteManyItemInCart(req.body)
         return res.status(200).json(data)
     }catch(err){
         res.status(400).json({message: err})

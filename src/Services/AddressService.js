@@ -5,10 +5,10 @@ const createAddress = (address) => {
     return new Promise(async (resolve, reject) => {
         const { homeNumber, commune, district, city, userId, phone, name, addressMain } = address; 
         try {
-            const checkMainAddress = await Address.countDocuments({addressMain:true})
-            console.log(checkMainAddress)
+            const checkMainAddress = await Address.countDocuments({addressMain:true, userId: userId})
+            // console.log(checkMainAddress)
             if(checkMainAddress === 1 && addressMain){
-                await Address.updateMany({ addressMain: true }, { addressMain: false }, {new: true});
+                await Address.updateMany({ addressMain: true, userId: userId }, { addressMain: false }, {new: true});
             }
             let createdAddress = await Address.create({
                 homeNumber: homeNumber,
@@ -20,7 +20,6 @@ const createAddress = (address) => {
                 name: name,
                 addressMain: checkMainAddress === 0 ? true : addressMain 
             });
-            console.log(createdAddress);
             if (createdAddress) {
                 resolve({
                     status: "OK",
@@ -45,9 +44,10 @@ const createAddress = (address) => {
 const updateAddress = (id, data) => {
     return new Promise(async (resolve, reject) => { 
         try {
-            const checkMainAddress = await Address.countDocuments({addressMain:true})
+            // console.log(data)
+            const checkMainAddress = await Address.countDocuments({addressMain:true, userId: data.userId})
             if(checkMainAddress === 1 && data.addressMain){
-                await Address.updateMany({ addressMain: true }, { addressMain: false }, {new: true});
+                await Address.updateMany({ addressMain: true, userId: data.userId }, { addressMain: false }, {new: true});
             }
             const checkAddress = await Address.findById(id)
             if(checkAddress.addressMain && !data.addressMain){

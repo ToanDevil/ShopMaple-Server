@@ -99,12 +99,17 @@ const deleteItemInCart = (productId) => {
     })
 }
 
-const deleteManyItemInCart = (productIDs) => {
+const deleteManyItemInCart = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const {productIds, userId} = data
             // Sử dụng $pull để xóa các item trong giỏ hàng có productId nằm trong danh sách productIDs
             await Cart.updateOne(
-                { $pull: { items: { productId: { $in: productIDs } } } }
+                {
+                    userId : userId,
+                    'items.productId': {$in : productIds}
+                },
+                { $pull: { items: { productId: { $in: productIds } } } }
             );
 
             resolve({
