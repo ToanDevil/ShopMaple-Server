@@ -60,7 +60,7 @@ const getProductByID = async (req, res) => {
 const getAllProduct = async (req,res) => {
     try{
         const {limit, page, minPrice, maxPrice, type, search} = req.query
-        const dataProduct = await ProductService.getAllProduct(limit || 10e9,page || 0, minPrice||0,maxPrice||10e9, type,search)
+        const dataProduct = await ProductService.getAllProduct(limit || 10e9,page || 1, minPrice||0,maxPrice||10e9, type,search)
         return res.status(200).json(dataProduct)
     }catch(err){
         res.status(400).json({message: err})

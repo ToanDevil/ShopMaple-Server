@@ -148,7 +148,61 @@ const getUser = (id) => {
 const getAllUser = () => {
     return new Promise(async (resolve, reject) => {
         try{
-            const userData = await User.find()
+            const userData = await User.aggregate([
+                {
+                    $lookup: {
+                        from: "addresses",
+                        localField: "_id",
+                        foreignField: "userId",
+                        as: "addresses"
+                    }
+                },
+                {
+                    $project: {
+                        username: 1,
+                        name: 1,
+                        email: 1,
+                        isAdmin: 1,
+                        phone: 1,
+                        avatar: 1,
+                        sex: 1,
+                        dob: 1,
+                        createdAt: 1,
+                        updatedAt: 1,
+                        _id: 1,
+                        mainAddress: {
+                            $filter: {
+                                input: "$addresses",
+                                as: "address",
+                                cond: { $eq: ["$$address.addressMain", true] }
+                            }
+                        }
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$mainAddress",
+                        preserveNullAndEmptyArrays: true  // Giữ người dùng nếu không có địa chỉ chính
+                    }
+                },
+                {
+                    $group: {
+                        username: { $first: "$username" },
+                        name: { $first: "$name" },
+                        email: { $first: "$email" },
+                        isAdmin: { $first: "$isAdmin" },
+                        phone: { $first: "$phone" },
+                        avatar: { $first: "$avatar" },
+                        sex: { $first: "$sex" },
+                        dob: { $first: "$dob" },
+                        createdAt: { $first: "$createdAt" },
+                        updatedAt: { $first: "$updatedAt" },
+                        _id: "$_id",
+                        mainAddress: { $first: "$mainAddress" }
+                    }
+                }
+            ])
+            
             resolve({
                 status: "OK",
                 data: userData

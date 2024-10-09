@@ -163,13 +163,13 @@ const getAllProduct = (limit, page, minPrice, maxPrice, type, search) => {
             }
 
             const total = await Product.countDocuments(condition);
-            const productData = await Product.find(condition).limit(limit).skip(page * limit);
+            const productData = await Product.find(condition).limit(limit).skip((page-1) * limit);
 
             resolve( {
                 status: "OK",
                 data: productData,
                 total: total,
-                currentPage: parseInt(page) + 1,
+                currentPage: parseInt(page),
                 totalPage: Math.ceil(total / limit)
             });
         }catch(err){
