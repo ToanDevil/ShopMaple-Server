@@ -21,7 +21,7 @@ app.use(cookieParser())
 routes(app)
 
 
-mongoose.connect('mongodb://localhost:27017/maple')
+mongoose.connect('mongodb://127.0.0.1:27017/maple')
     .then(() => {
     console.log('Connected to MongoDB');
     })
