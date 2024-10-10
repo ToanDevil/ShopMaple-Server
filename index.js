@@ -12,7 +12,7 @@ const app = express()
 const port = process.env.PORT || 3001
 
 app.use(cors({
-    origin: 'https://shop-maple-client.vercel.app/', // Thay thế bằng URL của frontend
+    origin: 'https://shop-maple-client.vercel.app', // Thay thế bằng URL của frontend
     credentials: true // Cho phép gửi cookie
 }));
 app.set('trust proxy', 1); // Tin tưởng proxy
