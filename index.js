@@ -15,6 +15,7 @@ app.use(cors({
     origin: 'https://shop-maple-client.vercel.app/', // Thay thế bằng URL của frontend
     credentials: true // Cho phép gửi cookie
 }));
+app.set('trust proxy', 1); // Tin tưởng proxy
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.json())

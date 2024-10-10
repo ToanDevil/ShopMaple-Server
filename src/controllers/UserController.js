@@ -34,7 +34,9 @@ const loginUser = async(req, res) => {
 
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            secure: false,
+            secure: true, // Bắt buộc phải có để gửi qua HTTPS
+            sameSite: 'none', // Để cookie có thể hoạt động cross-site
+            // maxAge: 24 * 60 * 60 * 1000 // Cookie tồn tại trong 1 ngày
         })
         return res.status(200).json(newResponse)
     }catch(err){
