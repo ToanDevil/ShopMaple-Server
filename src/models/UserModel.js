@@ -5,14 +5,14 @@ const userSchema = new mongoose.Schema(
         name: { type: String},
         email: {type: String},
         password: { type: String, require: true },
-        isAdmin: {type: Boolean, default: false, require: true},
+        isAdmin: {type: Boolean, default: false },
         phone: {type: Number, require: true},
-        avatar: { type: String, require: true},
-        sex: { type: Number, require: true},
-        dob: { type: Date, require: true},
+        avatar: { type: String },
+        sex: { type: Number },
+        dob: { type: Date },
         address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
-        access_token: {type: String, require: true},
-        refresh_token: {type: String, require: true}
+        access_token: {type: String },
+        refresh_token: {type: String }
     },
     {
         timestamps: true
