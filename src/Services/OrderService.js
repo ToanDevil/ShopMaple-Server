@@ -118,6 +118,113 @@ const getUserOrder = (userID) => {
     });
 }
 
+const getDetailOrderById = (orderId) => {
+  return new Promise( async (resolve, reject) => {
+      try {
+          const objectId = new mongoose.Types.ObjectId(orderId);
+          const userOrders = await Order.aggregate([
+            {
+              $match: { _id: objectId } // Lọc theo orderId
+            },
+            {
+              $lookup: {
+                from: "order_details",
+                localField: "orderDetailId",
+                foreignField: "_id",
+                as: "orderDetails"
+              }
+            },
+            {
+              $unwind: "$orderDetails" // Giữ nguyên orderDetails
+            },
+            {
+              $lookup: {
+                from: "products",
+                localField: "orderDetails.items.productId",
+                foreignField: "_id",
+                as: "productDetails"
+              }
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "orderDetails.userId",
+                foreignField: "_id",
+                as: "userDetail"
+              }
+            },
+            {
+              $lookup: {
+                from: "addresses",
+                localField: "orderDetails.addressId",
+                foreignField: "_id",
+                as: "addressDetail"
+              }
+            },
+            {
+              $addFields: {
+                "orderDetails.items": {
+                  $map: {
+                    input: "$orderDetails.items",
+                    as: "item",
+                    in: {
+                      $mergeObjects: [
+                        "$$item",
+                        {
+                          productDetail: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: "$productDetails",
+                                  as: "product",
+                                  cond: { $eq: ["$$product._id", "$$item.productId"] }
+                                }
+                              },
+                              0
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "orderDetails.userDetail": {
+                  $arrayElemAt: ["$userDetail", 0]
+                },
+                "orderDetails.addressDetail": {
+                  $arrayElemAt: ["$addressDetail", 0]
+                }
+              }
+            },
+            {
+              $project: {
+                _id: 1,
+                status: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                orderDetails: 1,
+              }
+            },
+          ]); 
+            
+          if(userOrders.length > 0){
+              resolve({
+                  status: "OK",
+                  message: "success",
+                  data: userOrders[0]
+              })
+          }else {
+              resolve({
+                  status: "ERR",
+                  message: "not found order",
+              })
+          }  
+      } catch (err) {
+          reject(err.message);
+      }
+  });
+}
+
 const getAllOrder = () => {
   return new Promise( async (resolve, reject) => {
       try {
@@ -262,5 +369,6 @@ module.exports = {
     crateOrder,
     getUserOrder,
     getAllOrder,
-    updateOrder
+    updateOrder,
+    getDetailOrderById
 }

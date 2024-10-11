@@ -32,6 +32,16 @@ const getUserOrder = async (req, res) => {
     }
 }
 
+const getOrderByID = async (req, res) => {
+    try {
+        const {orderId} = req.params
+        const data = await OrderService.getDetailOrderById(orderId)
+        return res.status(200).json(data)
+    } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+}
+
 const getAllOrder = async (req, res) => {
     try {
         const data = await OrderService.getAllOrder()
@@ -46,5 +56,6 @@ module.exports = {
     updateOrder,
     cancelOrder,
     getUserOrder,
-    getAllOrder
+    getAllOrder,
+    getOrderByID
 }

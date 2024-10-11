@@ -200,6 +200,9 @@ const getAllUser = () => {
                         _id: "$_id",
                         mainAddress: { $first: "$mainAddress" }
                     }
+                },
+                {
+                    $sort: { createdAt: -1 } // Sắp xếp theo ngày giảm dần
                 }
             ])
             

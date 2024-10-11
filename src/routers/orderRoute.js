@@ -4,6 +4,7 @@ const orderController = require('../controllers/OrderController')
 const { authMiddleware } = require('../middleWare/authmiddleware')
 
 router.get('/getOrderByUserID', orderController.getUserOrder)
+router.get('/getDetailOrderById/:orderId', orderController.getOrderByID)
 router.delete('/cancel-order', orderController.cancelOrder)
 router.put('/update-status', authMiddleware, orderController.updateOrder)
 router.get('/getAllOrder', authMiddleware,  orderController.getAllOrder)
