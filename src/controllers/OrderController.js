@@ -34,7 +34,7 @@ const getUserOrder = async (req, res) => {
 
 const getOrderByID = async (req, res) => {
     try {
-        const {orderId} = req.params
+        const orderId = req.params.orderId
         const data = await OrderService.getDetailOrderById(orderId)
         return res.status(200).json(data)
     } catch (error) {
