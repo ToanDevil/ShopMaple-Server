@@ -11,5 +11,6 @@ router.put('/update-user/:id', userController.updateUser)
 router.get('/admin/getAll',authMiddleware, userController.getAllUser)
 router.delete('/admin/delete-user/:id', authMiddleware, userController.deleteUser)
 router.post('/refresh-token', userController.refreshToken)
+router.post('/auth/facebook', userController.loginFacebook);
 
 module.exports = router

@@ -84,6 +84,73 @@ const loginUser = (userLogin) => {
     })
 }
 
+const findOrCreateUserFromFacebook = (userInfo) => {
+    return new Promise(async (resolve, reject)=>{
+        const { id, email, name, picture } = userInfo;
+        try{
+            // Tìm người dùng trong database dựa trên Facebook ID hoặc email
+            let user = await User.findOne({ facebookId: id }) || await User.findOne({ email });
+            if (!user) {
+                // Nếu người dùng chưa tồn tại, tạo một người dùng mới
+                const createUser = await User.create({
+                    facebookId: id,
+                    email: email || "",
+                    username: name,
+                    avatar: picture
+                })
+                if(createUser){
+                    resolve({
+                        status: "OK",
+                        message: "success",
+                        data: createUser
+                    })
+                }else {
+                    // Nếu không tạo được người dùng, reject với thông báo lỗi
+                    resolve({
+                        status: 'ERR',
+                        message: "Lỗi Server"
+                    });
+                }
+            }
+            resolve({
+                status: "OK",
+                message: "success",
+                data: user
+            })
+        }catch(err){
+            reject(err)
+        }
+    })
+}
+
+const loginUserWithFacebook = (user) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Tạo access token và refresh token
+            console.log("user from facebook", user)
+            const access_token = await generateAccessToken({
+                id: user.id,
+                isAdmin: user.isAdmin || false,
+            });
+
+            const refresh_token = await generateRefreshToken({
+                id: user.id,
+                isAdmin: user.isAdmin || false,
+            });
+
+            resolve({
+                status: "OK",
+                message: "Đăng nhập thành công",
+                access_token: access_token,
+                refresh_token: refresh_token
+            });
+        } catch (err) {
+            reject(err);
+        }
+    });
+};
+
+
 const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try{
@@ -225,4 +292,6 @@ module.exports = {
     deleteUser,
     getUser,
     getAllUser,
+    findOrCreateUserFromFacebook,
+    loginUserWithFacebook
 }

@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
         sex: { type: Number },
         dob: { type: Date },
         address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
+        facebookId: { type: String},
         access_token: {type: String },
         refresh_token: {type: String }
     },

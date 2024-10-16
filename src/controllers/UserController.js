@@ -1,5 +1,6 @@
 const UserService = require('../Services/UserService')
 const JwtService = require('../Services/JwtService')
+const axios = require('axios');
 
 const createUser = async(req,res) => {
     try{
@@ -43,6 +44,64 @@ const loginUser = async(req, res) => {
         res.status(400).json({message: err})
     }
 }
+
+const loginFacebook = async (req, res) => {
+    try {
+        const { accessToken } = req.body;
+        console.log("accessToken", accessToken)
+        if (!accessToken) {
+            return res.status(200).json({
+                message: "Không có access token từ Facebook."
+            });
+        }
+
+        // Gửi request đến Facebook để lấy thông tin người dùng
+        const userInfo = await getUserInfoFromFacebook(accessToken);
+
+        if (!userInfo) {
+            return res.status(400).json({
+                message: "Xác thực Facebook thất bại."
+            });
+        }
+
+        // Tìm hoặc tạo người dùng trong database dựa trên thông tin từ Facebook
+        const user = await UserService.findOrCreateUserFromFacebook(userInfo);
+        console.log("user", user)
+
+        // Tạo JWT token và refresh token như bình thường
+        const response = await UserService.loginUserWithFacebook(user);
+
+        const { refresh_token, ...newResponse } = response;
+
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        });
+
+        return res.status(200).json(newResponse);
+    } catch (err) {
+        res.status(400).json({ message: err });
+    }
+};
+
+
+
+const getUserInfoFromFacebook = async (accessToken) => {
+    try {
+        // Gửi request tới Facebook Graph API để lấy thông tin người dùng
+        const response = await axios.get(
+            `https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email,picture`
+        );
+        
+        // Trả về dữ liệu người dùng
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user info from Facebook:", error);
+        return null;
+    }
+};
+
 
 const updateUser = async (req, res) => {
     try{
@@ -126,5 +185,6 @@ module.exports = {
     getUser,
     getAllUser,
     refreshToken,
-    logoutUser
+    logoutUser,
+    loginFacebook
 }
