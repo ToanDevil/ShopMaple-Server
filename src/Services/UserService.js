@@ -87,6 +87,7 @@ const loginUser = (userLogin) => {
 const findOrCreateUserFromFacebook = (userInfo) => {
     return new Promise(async (resolve, reject)=>{
         const { id, email, name, picture } = userInfo;
+        console.log("userInfo", userInfo)
         try{
             // Tìm người dùng trong database dựa trên Facebook ID hoặc email
             let user = await User.findOne({ facebookId: id }) || await User.findOne({ email });
@@ -96,7 +97,7 @@ const findOrCreateUserFromFacebook = (userInfo) => {
                     facebookId: id,
                     email: email || "",
                     username: name,
-                    avatar: picture
+                    avatar: picture.data.url
                 })
                 if(createUser){
                     resolve({
@@ -112,11 +113,7 @@ const findOrCreateUserFromFacebook = (userInfo) => {
                     });
                 }
             }
-            resolve({
-                status: "OK",
-                message: "success",
-                data: user
-            })
+            resolve(user)
         }catch(err){
             reject(err)
         }
@@ -129,12 +126,12 @@ const loginUserWithFacebook = (user) => {
             // Tạo access token và refresh token
             console.log("user from facebook", user)
             const access_token = await generateAccessToken({
-                id: user.id,
+                id: user._id,
                 isAdmin: user.isAdmin || false,
             });
 
             const refresh_token = await generateRefreshToken({
-                id: user.id,
+                id: user._id,
                 isAdmin: user.isAdmin || false,
             });
 
